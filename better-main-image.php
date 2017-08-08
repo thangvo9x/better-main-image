@@ -42,12 +42,22 @@ function add_events_to_json_api(){
  *
  * @since  1.0.0
  */
-add_action( 'rest_api_init', 'register_gallery_images' );
-function register_gallery_images() {
+
+add_action( 'rest_api_init', 'register_add_more_fields_to_rest_api' );
+function register_add_more_fields_to_rest_api() {
     register_rest_field( 'job_listing',
         'gallery_images',
         array(
             'get_callback'    => 'get_gallery_images',
+            'update_callback' => null,
+            'schema'          => null,
+        )
+    );
+
+    register_rest_field( 'job_listing_category',
+        'term_image',
+        array(
+            'get_callback'    => 'get_term_meta_image',
             'update_callback' => null,
             'schema'          => null,
         )
@@ -104,4 +114,16 @@ function get_gallery_images( $object, $field_name, $request ) {
 
 	endforeach;
     return $arr_images;
+}
+
+
+/**
+ * Return Custom Taxonomy field
+ *
+ * @since  1.0.0
+ */
+
+function get_term_meta_image($object, $field_name, $request){
+    $term_meta_id = get_term_meta($object['id'], 'pix_term_image', true);
+    return  get_post_meta($term_meta_id,'_wp_attachment_metadata');
 }
